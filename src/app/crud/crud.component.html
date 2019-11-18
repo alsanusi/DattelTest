@@ -1,0 +1,139 @@
+<div class="container">
+  <div class="regentry">
+    <img src="../../assets/cooking-bg.png" alt="Italian Trulli" class="img-logo-center">
+    <h3 [hidden]="showDetailRecipeData" align="center">Hi Chef, Welcome!</h3>
+    <h3 *ngIf="showDetailRecipeData" align="center">Hi Chef, Here is the Recipe Detail of {{recipeDataModel.recipeName}}:</h3>
+    <br>
+    <!-- Searchable Recipe Type-->
+    <form [hidden]="showDetailRecipeData">
+      <div class="form-group row">
+        <label class="col-2 col-form-label"><b>View Recipe By Type</b></label>
+        <div class="col-10 dropdown" ngbDropdown myDrop="ngbDropdown">
+          <select class="form-control" name="recipeType" [(ngModel)]="recipeType" (ngModelChange)="onSelect(recipeType)">
+            <option *ngFor="let item of recipeTypes | keyvalue" [ngValue]="item.value">
+              {{item.value}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </form>
+  </div>
+  <br>
+  <!-- Show The Recipe Data Details -->
+  <form name="recipeDataDetailsForm" *ngIf="showDetailRecipeData">
+    <div class="form-group row">
+      <label class="col-2 col-form-label"><b>Recipe Type</b></label>
+      <div class="col-10">
+        <label class="col-form-label">{{recipeDataModel.recipeType}}</label>
+      </div>
+    </div> 
+    <div class="form-group row">
+      <label class="col-2 col-form-label"><b>Recipe Name</b></label>
+      <div class="col-10">
+        <label class="col-form-label">{{recipeDataModel.recipeName}}</label>
+      </div>
+    </div> 
+    <div class="form-group row">
+      <label class="col-2 col-form-label"><b>Recipe Ingredients</b></label>
+      <div class="col-10"> 
+        <label class="col-form-label">{{recipeDataModel.recipeIngredients}}</label>
+      </div>
+    </div>
+    <br>
+    <div class="form-group row">
+      <label class="col-2 col-form-label"><b>Recipe Steps</b></label>
+      <div class="col-10">
+        <label class="col-form-label">{{recipeDataModel.recipeSteps}}</label>
+      </div>
+    </div>
+    <br>
+    <button type="submit" class="btn btn-primary center" (click)="resetView()">Clear {{recipeDataModel.recipeName}} Detail</button>
+    <br>
+    <br>
+  </form>
+  <!-- All the Recipe Data -->
+  <div class="reglist" [hidden]="showDetailRecipeData">
+    <h5>Recipe Table List:</h5>
+    <br>
+    <table class="table table-striped">
+      <thead class="tittle-primary-color">
+        <tr>
+          <th>No</th>
+          <th>Recipe Type</th>
+          <th>Recipe Name</th>
+          <th *ngIf="!recipeType"></th>
+          <th *ngIf="!recipeType"></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- <tr *ngFor="let recipeData of recipeDataList; let i = index"> -->
+        <tr *ngFor="let recipeData of recipeDataList | filter:recipeType; let i = index">
+          <th scope="row">{{i + 1}}</th>
+          <td><b>{{recipeData.recipeType}}</b></td>
+          <td>{{recipeData.recipeName}}</td>
+          <td *ngIf="!recipeType">
+            <button type="button" class="btn btn-info" (click)="onEdit(i)">
+                <img src="../../assets/edit.png">
+            </button>
+          </td>
+          <td *ngIf="!recipeType">
+            <button type="button" class="btn btn-danger" (click)="onDelete(i)">
+              <img src="../../assets/trash.png">
+            </button>
+          </td>
+          <td>
+            <button type="button" class="btn btn-success" (click)="onView(i)">
+                <img src="../../assets/view.png">
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <div class="text-right" [hidden]="showDetailRecipeData || recipeType">
+      <button type="submit" class="btn btn-primary" (click)="onNew()">Insert New Recipe</button>
+    </div>
+    <button type="submit" class="btn btn-primary center" *ngIf="recipeType" (click)="resetView()">Reset View</button>
+  </div>
+  <br>
+  <!-- Insert and Update the Recipe Data -->
+  <div class="regentry" *ngIf="showRecipeData">
+    <form name="recipeDataForm" (ngSubmit)="onSave()">
+      <h5>Please Insert The Recipe Details Below:</h5>
+      <br>
+      <div class="form-group row">
+        <label class="col-2 col-form-label"><b>Recipe Type</b></label>
+        <div class="col-10 dropdown" ngbDropdown myDrop="ngbDropdown">
+          <button type="button" class="btn btn-outline-primary" id="dropdownManual" name="recipeType" ngbDropdownToggle>{{recipeDataModel.recipeType}}</button>
+          <div ngbDropdownMenu aria-labelledby="dropdownManual">
+            <button type="button" class="dropdown-item" *ngFor="let item of recipeTypes | keyvalue" (click)="onChangeRecipeType(item.value)">{{item.value}}</button>
+          </div>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-2 col-form-label"><b>Recipe Name</b></label>
+        <div class="col-10">
+          <input class="form-control" type="text" [(ngModel)]="recipeDataModel.recipeName" name="recipeName" />
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-2 col-form-label"><b>Recipe Ingredients</b></label>
+        <div class="col-10">
+          <textarea class="form-control" [(ngModel)]="recipeDataModel.recipeIngredients" name="recipeIngredients"></textarea>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label class="col-2 col-form-label"><b>Recipe Steps</b></label>
+        <div class="col-10">
+          <textarea class="form-control" [(ngModel)]="recipeDataModel.recipeSteps" name="recipeSteps"></textarea>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-success">{{submitRecipeData}}</button>
+      &nbsp;&nbsp;
+      <button type="submit" class="btn btn-primary" (click)="onCancel()">Cancel</button>
+      <br>
+      <br>
+    </form>
+  </div>
+</div>
